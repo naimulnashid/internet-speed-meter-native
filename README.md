@@ -45,8 +45,9 @@ page of the run history.
 
 ## What it costs
 
-The meter is what runs all day, and it is small: about 17 MB of private
-memory and a sample a second. The dashboard is a separate process of the same
+The meter is what runs all day, and it is small: about 30 MB of private
+memory once settled (the C# meter it replaces used the same) and a sample a
+second. The dashboard is a separate process of the same
 app, started when its window opens and gone when it closes, so its framework
 (WinUI 3) never sits in memory behind a closed window.
 
