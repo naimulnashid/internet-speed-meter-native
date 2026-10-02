@@ -1,0 +1,224 @@
+<!doctype html>
+<!--
+  Source of docs/social-preview.png, the repository's social preview
+  (GitHub: Settings > General > Social preview). 1280x640, GitHub's size.
+
+  The window and the taskbar on the right are ILLUSTRATIVE: drawn from a fixed
+  seed, so every render is identical, and none of it is anyone's connection.
+  Keep it that way - no real speeds, addresses or adapter names belong in an
+  image shared publicly.
+
+  Render with Edge (the fonts are the app's own, under src\SpeedMeter.App\Assets):
+
+    "C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe" --headless=new
+      --disable-gpu --hide-scrollbars --force-device-scale-factor=1
+      --window-size=1280,640 --virtual-time-budget=3000
+      --user-data-dir=%TEMP%\social-preview-edge
+      --screenshot=%CD%\docs\social-preview.png %CD%\docs\social-preview.html
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Internet Speed Meter</title>
+<style>
+  @font-face { font-family: Geist; font-weight: 100 900; src: url(../src/SpeedMeter.App/Assets/Fonts/Geist-Variable.ttf) format('truetype'); }
+  @font-face { font-family: 'Geist Mono'; font-weight: 100 900; src: url(../src/SpeedMeter.App/Assets/Fonts/GeistMono-Variable.ttf) format('truetype'); }
+
+  /* The app's own tokens (src/SpeedMeter.App/Theme/Palette.cs): green down, amber up. */
+  :root {
+    --bg: #000000;
+    --bg-panel: #0a0a0b;
+    --border: #1e1e22;
+    --border-strong: #2c2c33;
+    --grid: #1a1a1e;
+    --text: #f5f5f7;
+    --text-dim: #a1a1aa;
+    --text-faint: #7c7c88;
+    --down: #6ee7a8;
+    --down-bright: #8df3bd;
+    --up: #ffc46b;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1280px; height: 640px; overflow: hidden; }
+  body {
+    background:
+      radial-gradient(620px 430px at 84% 36%, rgba(110, 231, 168, 0.16), transparent 70%),
+      radial-gradient(420px 280px at 98% 100%, rgba(255, 196, 107, 0.08), transparent 70%),
+      var(--bg);
+    color: var(--text);
+    font-family: Geist, system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .frame {
+    position: absolute; inset: 72px 64px 72px 72px;
+    display: grid; grid-template-columns: 1fr 548px; grid-template-rows: 100%; gap: 44px;
+  }
+
+  /* ---- left: the words ---- */
+  .copy { display: flex; flex-direction: column; justify-content: space-between; }
+
+  .pills { display: flex; gap: 10px; }
+  .pill {
+    display: inline-flex; align-items: center; gap: 9px;
+    padding: 7px 15px 7px 13px; border: 1px solid var(--border-strong); border-radius: 999px;
+    font-family: 'Geist Mono', monospace; font-size: 17px; color: var(--text-dim);
+    background: rgba(10, 10, 11, 0.7);
+  }
+  .dot { width: 9px; height: 9px; border-radius: 50%; background: var(--down); }
+
+  h1 { font-size: 72px; line-height: 1; white-space: nowrap; font-weight: 700; letter-spacing: -0.045em; }
+  h1 .accent { color: var(--down-bright); }
+  .tagline {
+    margin-top: 26px; max-width: 540px;
+    font-size: 24px; line-height: 1.38; font-weight: 400; color: var(--text-dim);
+    letter-spacing: -0.01em;
+  }
+  .tagline strong { color: var(--text); font-weight: 500; }
+
+  .chips { display: flex; flex-wrap: wrap; gap: 10px; }
+  .chip {
+    font-family: 'Geist Mono', monospace; font-size: 16px; color: var(--text-dim);
+    padding: 6px 12px; border-radius: 8px; background: #111114; border: 1px solid var(--border);
+  }
+
+  /* ---- right: an illustrative window above an illustrative taskbar ---- */
+  .right { display: flex; flex-direction: column; justify-content: center; gap: 18px; }
+  .window {
+    background: var(--bg); border: 1px solid var(--border-strong); border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.03), 0 30px 80px rgba(0, 0, 0, 0.7);
+  }
+  .titlebar {
+    height: 32px; display: flex; align-items: center; gap: 9px; padding: 0 0 0 12px;
+    font-size: 12.5px; color: var(--text-dim); border-bottom: 1px solid var(--border);
+  }
+  .titlebar img { width: 16px; height: 16px; }
+  .titlebar .caption { margin-left: auto; display: flex; }
+  .titlebar .caption span { width: 40px; height: 32px; display: grid; place-items: center; color: var(--text-faint); font-size: 13px; }
+
+  .topbar {
+    height: 44px; display: flex; align-items: center; padding: 0 14px; gap: 4px;
+    border-bottom: 1px solid var(--border);
+  }
+  .tab { font-size: 13px; color: var(--text-dim); padding: 5px 10px; border-radius: 7px; }
+  .tab.on { background: rgba(110, 231, 168, 0.14); color: var(--down-bright); }
+  .live { margin-left: auto; display: flex; gap: 12px; font-size: 12.5px; font-weight: 600; font-variant-numeric: tabular-nums; }
+  .live .d { color: var(--down); }
+  .live .u { color: var(--up); }
+
+  .page { padding: 16px 18px 18px; display: flex; flex-direction: column; gap: 12px; }
+  .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+  .stat { background: var(--bg-panel); border: 1px solid var(--border); border-radius: 10px; padding: 11px 13px; }
+  .stat .k { font-size: 9px; letter-spacing: 0.08em; color: var(--text-faint); font-weight: 500; }
+  .stat .v { margin-top: 5px; font-size: 25px; font-weight: 650; letter-spacing: -0.03em; font-variant-numeric: tabular-nums; }
+  .stat .v small { font-size: 11.5px; color: var(--text-dim); font-weight: 600; margin-left: 4px; letter-spacing: 0; }
+  .stat .w { margin-top: 3px; font-size: 10.5px; color: var(--text-faint); }
+  .v.down { color: var(--down); }
+  .v.up { color: var(--up); }
+
+  .card { background: var(--bg-panel); border: 1px solid var(--border); border-radius: 10px; padding: 12px 14px 10px; }
+  .card-title { font-size: 13.5px; font-weight: 600; }
+  .card-sub { margin-top: 2px; font-size: 10.5px; color: var(--text-dim); }
+  #peaks { display: block; margin-top: 8px; }
+
+  /* The taskbar, and the readout in the clock's size that is the app's point. */
+  .taskbar {
+    height: 48px; border-radius: 10px; border: 1px solid var(--border-strong);
+    background: rgba(32, 32, 36, 0.92);
+    display: flex; align-items: center; padding: 0 16px 0 14px; gap: 14px;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+  }
+  .readout { display: grid; grid-template-columns: auto auto; column-gap: 7px; row-gap: 1px; align-items: center; font-size: 13.5px; font-variant-numeric: tabular-nums; }
+  .readout i { width: 0; height: 0; border-left: 4.5px solid transparent; border-right: 4.5px solid transparent; }
+  .readout i.d { border-top: 7px solid var(--down); }
+  .readout i.u { border-bottom: 7px solid var(--up); }
+  .icons { display: flex; gap: 10px; margin: 0 auto; }
+  .icons span { width: 26px; height: 26px; border-radius: 6px; background: #3a3a42; opacity: 0.55; }
+  .icons span:nth-child(3) { background: #4a6fa5; opacity: 0.7; }
+  .clock { text-align: right; font-size: 12.5px; line-height: 1.3; color: #e8e8ec; font-variant-numeric: tabular-nums; }
+</style>
+</head>
+<body>
+<div class="frame">
+  <section class="copy">
+    <div class="pills">
+      <span class="pill"><span class="dot"></span>Windows 10 / 11</span>
+      <span class="pill">Native app</span>
+    </div>
+    <div>
+      <h1>Internet Speed<br><span class="accent">Meter</span></h1>
+      <p class="tagline">
+        Live download and upload on the taskbar, in the clock's own size.
+        <strong>Every second recorded, and a speed test to check the line.</strong>
+      </p>
+    </div>
+    <div class="chips">
+      <span class="chip">WinUI 3</span>
+      <span class="chip">.NET 10</span>
+      <span class="chip">Local only</span>
+      <span class="chip">MIT</span>
+    </div>
+  </section>
+
+  <section class="right" aria-hidden="true">
+    <div class="window">
+      <div class="titlebar">
+        <img src="../src/SpeedMeter.App/Assets/app-icon.svg" alt="">Internet Speed Meter
+        <span class="caption"><span>&#x2013;</span><span>&#x25A1;</span><span>&#x2715;</span></span>
+      </div>
+      <div class="topbar">
+        <span class="tab on">Speed</span><span class="tab">Test</span>
+        <span class="live"><span class="d">&#x2193; 86.4 Mbps</span><span class="u">&#x2191; 12.1 Mbps</span></span>
+      </div>
+      <div class="page">
+        <div class="stats">
+          <div class="stat"><div class="k">FASTEST SECOND DOWN</div><div class="v down">96.8<small>Mbps</small></div><div class="w">4 Sep, 20:04</div></div>
+          <div class="stat"><div class="k">FASTEST SECOND UP</div><div class="v up">21.3<small>Mbps</small></div><div class="w">27 Sep, 13:36</div></div>
+          <div class="stat"><div class="k">BEST SUSTAINED 1 MIN</div><div class="v down">88.4<small>Mbps</small></div><div class="w">1 Oct, 20:39</div></div>
+        </div>
+        <div class="card">
+          <div class="card-title">Daily peak</div>
+          <div class="card-sub">The fastest single second each day.</div>
+          <svg id="peaks" width="490" height="128" viewBox="0 0 490 128"></svg>
+        </div>
+      </div>
+    </div>
+    <div class="taskbar">
+      <div class="readout">
+        <i class="d"></i><span>86.4 Mbps</span>
+        <i class="u"></i><span>12.1 Mbps</span>
+      </div>
+      <div class="icons"><span></span><span></span><span></span><span></span><span></span></div>
+      <div class="clock">20:41<br>02/10/2026</div>
+    </div>
+  </section>
+</div>
+
+<script>
+  // Fixed seed: every render is identical, and none of it is a real connection.
+  let seed = 20261002;
+  const rand = () => ((seed = (seed * 1664525 + 1013904223) >>> 0) / 4294967296);
+
+  // Daily peak: a month of days, down and up side by side, the line upgraded
+  // from 50 to 100 Mbps two thirds of the way along - the step the page exists
+  // to show. One day the machine was off: an empty slot, not a zero.
+  const N = 30, W = 490, H = 128, BASE = H - 6, TOP = 8;
+  let bars = `<line x1="0" y1="${BASE + 0.5}" x2="${W}" y2="${BASE + 0.5}" stroke="#1e1e22"/>`;
+  for (const f of [0.5, 1]) bars += `<line x1="0" y1="${BASE - f * (BASE - TOP)}" x2="${W}" y2="${BASE - f * (BASE - TOP)}" stroke="#141418" stroke-dasharray="3 5"/>`;
+  const band = W / N, bw = Math.min(6.2, band * 0.36);
+  for (let i = 0; i < N; i++) {
+    if (i === 8) continue;
+    const line = i >= 20 ? 1 : 0.5;
+    const down = line * (0.82 + rand() * 0.16);
+    const up = 0.16 + rand() * 0.05;
+    const x = i * band + (band - (bw * 2 + 2)) / 2;
+    const h = (v) => v * (BASE - TOP);
+    bars += `<rect x="${x}" y="${BASE - h(down)}" width="${bw}" height="${h(down)}" rx="1.6" fill="#6ee7a8"/>`;
+    bars += `<rect x="${x + bw + 2}" y="${BASE - h(up)}" width="${bw}" height="${h(up)}" rx="1.6" fill="#ffc46b"/>`;
+  }
+  document.getElementById('peaks').innerHTML = bars;
+</script>
+</body>
+</html>
