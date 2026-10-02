@@ -1,0 +1,22 @@
+# Build output
+bin/
+obj/
+artifacts/
+publish/
+TestResults/
+*.user
+.vs/
+
+# Speed history must never be committed: it is a record of when a real
+# machine was online and how fast. The logs, speed-test results and exports
+# all stay out.
+*.bin
+*.jsonl
+*.tsv
+*.csv
+*.log
+demo-data/
+
+# Screenshots taken while developing can show real figures. Anchored: the
+# README's own, made from invented data, live in docs/screenshots/.
+/screenshots/

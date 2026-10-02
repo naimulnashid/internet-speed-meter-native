@@ -1,0 +1,24 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  build:
+    # WinUI 3 and WinForms are Windows-only. One job keeps the minutes down on
+    # a private repo (Windows minutes count double).
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-dotnet@v6
+        with:
+          global-json-file: global.json
+
+      - name: Build
+        run: dotnet build SpeedMeterNative.slnx -c Release
+
+      - name: Test
+        run: dotnet test --project tests/SpeedMeter.Core.Tests/SpeedMeter.Core.Tests.csproj -c Release --no-build

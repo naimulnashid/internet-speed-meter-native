@@ -1,0 +1,8 @@
+root = true
+
+[*.cs]
+# Dead code. Suggestions, so the IDE and `dotnet format` report them without
+# failing a build (warnings are errors here).
+dotnet_diagnostic.IDE0051.severity = suggestion
+dotnet_diagnostic.IDE0052.severity = suggestion
+dotnet_diagnostic.IDE0060.severity = suggestion

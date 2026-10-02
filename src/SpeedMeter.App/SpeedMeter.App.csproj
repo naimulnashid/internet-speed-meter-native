@@ -1,0 +1,68 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net10.0-windows10.0.26100.0</TargetFramework>
+    <TargetPlatformMinVersion>10.0.19041.0</TargetPlatformMinVersion>
+    <RootNamespace>SpeedMeter.App</RootNamespace>
+    <AssemblyName>SpeedMeter</AssemblyName>
+    <UseWinUI>true</UseWinUI>
+    <Platforms>x64</Platforms>
+    <Platform>x64</Platform>
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <!-- Unpackaged and self-contained: no MSIX, no certificate, and no
+         dependency on whichever Windows App Runtime happens to be installed. -->
+    <WindowsPackageType>None</WindowsPackageType>
+    <!-- Not for MSIX (the app stays unpackaged): without this, `dotnet publish`
+         leaves out the app's own resources.pri and compiled XAML, and the
+         published build dies at startup with 0xC000027B while Debug runs. -->
+    <EnableMsixTooling>true</EnableMsixTooling>
+    <WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>
+    <SelfContained>true</SelfContained>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <ApplicationIcon>Assets\app.ico</ApplicationIcon>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <!-- Program.cs is the entry point: single instance, the meter thread, a lazy dashboard. -->
+    <DefineConstants>$(DefineConstants);DISABLE_XAML_GENERATED_MAIN</DefineConstants>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- The meter (taskbar text, tray icon, flyout) is WinForms on its own
+         thread: the C# meter's windows, carried over with their measured
+         fixes, and drawable without loading WinUI. See Program.cs.
+         A framework reference rather than UseWindowsForms: that property
+         brings in the WPF markup compiler, which then claims WinUI's .xaml
+         files (error MC6000), and global usings that make Button, Panel,
+         Application and Color ambiguous in every WinUI file. -->
+    <FrameworkReference Include="Microsoft.WindowsDesktop.App.WindowsForms" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- The components, not the Microsoft.WindowsAppSDK meta-package, which
+         also pulls in the AI and ML components (~60 MB) this app never calls. -->
+    <PackageReference Include="Microsoft.WindowsAppSDK.WinUI" Version="2.3.9" />
+    <PackageReference Include="Microsoft.WindowsAppSDK.Foundation" Version="2.3.12" />
+    <PackageReference Include="Microsoft.WindowsAppSDK.InteractiveExperiences" Version="2.1.9" />
+    <PackageReference Include="Microsoft.WindowsAppSDK.DWrite" Version="2.1.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\SpeedMeter.Core\SpeedMeter.Core.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Assets\**\*" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
+  <!-- Release output: English UI resources only, and no debug symbols. -->
+  <PropertyGroup Condition="'$(Configuration)' == 'Release'">
+    <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
+    <DebugType>none</DebugType>
+  </PropertyGroup>
+
+  <Target Name="DropSymbolsFromPublish" AfterTargets="Publish">
+    <ItemGroup>
+      <_PublishedSymbols Include="$(PublishDir)**\*.pdb" />
+    </ItemGroup>
+    <Delete Files="@(_PublishedSymbols)" />
+  </Target>
+</Project>
