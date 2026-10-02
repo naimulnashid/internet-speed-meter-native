@@ -79,6 +79,14 @@ entry and an Installed apps entry, starts with Windows, and starts now.
 `Install.ps1 -NoStartup` leaves start-with-Windows off; `-Uninstall` removes
 it (or use Settings > Apps). **Uninstalling never deletes the history.**
 
+On a first install it asks where to keep the history and the one-second
+samples, suggesting a drive other than the system one, so the history
+survives a Windows reset. **After a reset, give it the same folders** and it
+says how much history it found there and carries on with it.
+`-HistoryFolder` and `-RawFolder` answer without asking, or move the folders
+of an existing install (the files already there stay where they are).
+Re-running the installer otherwise keeps the folders it has.
+
 ## Using it
 
 | | |
@@ -95,8 +103,9 @@ stops both.
 
 Settings live in `%AppData%\InternetSpeedMeter\settings.ini` (plain
 `key=value`), and the history wherever its `logfolder` says - by default
-`%LocalAppData%\InternetSpeedMeter\history`. Point `logfolder` at another
-drive if the history should survive a Windows reset.
+`%LocalAppData%\InternetSpeedMeter\history`, or the folder chosen at install.
+Point `logfolder` at another drive if the history should survive a Windows
+reset: a reset erases `settings.ini` too, so the installer asks again.
 
 | Key | Default | |
 |---|---|---|

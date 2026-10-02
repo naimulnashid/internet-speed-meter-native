@@ -75,7 +75,7 @@ internal sealed class MeterHost : ApplicationContext
         _widget.SetUnits(_settings.Units);
         _widget.SetSide(_settings.Side);
         _widget.LeftClicked += (_, _) => ToggleFlyout();
-        _widget.RightClicked += (_, _) => _menu!.Show(Cursor.Position);
+        _widget.RightClicked += (_, _) => ShowMenu();
         _widget.DoubleClicked += (_, _) => OpenFromDoubleClick();
         // The handle exists from the start: the tray's right-click asks for the
         // foreground through it (see OnTrayMouseDown).
@@ -83,7 +83,6 @@ internal sealed class MeterHost : ApplicationContext
 
         _menu = new ContextMenuStrip();
         _menu.Opening += OnMenuOpening;
-
         // No ContextMenuStrip on the icon: the menu is opened by hand, across the
         // press and the release. See OnTrayMouseDown.
         _tray = new NotifyIcon { Visible = true, Text = "Internet Speed Meter" };
@@ -282,9 +281,9 @@ internal sealed class MeterHost : ApplicationContext
     /* ------------------------------------------------------------ Input */
 
     /// <summary>
-    /// Takes the foreground on the PRESS, so the menu the release opens is a
-    /// foreground window's menu - the same fault, from the same cause, as the
-    /// taskbar readout had (see <see cref="TaskbarWidget"/>'s OnMouseDown).
+    /// Takes the foreground on the PRESS as well - the same fault, from the same
+    /// cause, as the taskbar readout had (see <see cref="TaskbarWidget"/>'s
+    /// OnMouseDown) - and the release opens the menu through <see cref="ShowMenu"/>.
     /// NotifyIcon would show its own menu in the one order that costs a click.
     /// </summary>
     private void OnTrayMouseDown(object? sender, MouseEventArgs e)
@@ -294,8 +293,34 @@ internal sealed class MeterHost : ApplicationContext
 
     private void OnTrayMouseUp(object? sender, MouseEventArgs e)
     {
-        if (e.Button == MouseButtons.Right) _menu.Show(Cursor.Position);
+        if (e.Button == MouseButtons.Right) ShowMenu();
         else if (e.Button == MouseButtons.Left) ToggleFlyout();
+    }
+
+    /// <summary>
+    /// Opens the menu as the foreground application's: the foreground is asked
+    /// for again on the release, and the menu opens one trip round the loop later.
+    /// </summary>
+    /// <remarks>
+    /// A dropdown's one cue that a click went to another program is its own
+    /// program losing the foreground. Opened while the meter is in the background,
+    /// it either closes at once, when an activation still in flight lands on it,
+    /// or stays open through any number of clicks on the taskbar, which take
+    /// nothing from the meter. The press alone cannot secure the foreground for
+    /// the tray icon: Explorer takes it for itself on every press of a tray icon,
+    /// after the meter's own request (measured: every first right-click from
+    /// another program opened the menu for under 10 ms). So it is asked for again
+    /// here, and the menu is posted behind the activation rather than opened
+    /// ahead of it.
+    /// </remarks>
+    private void ShowMenu()
+    {
+        var at = Cursor.Position;
+        Native.SetForegroundWindow(_widget.Handle);
+        _context.Post(_ =>
+        {
+            if (!_exiting) _menu.Show(at);
+        }, null);
     }
 
     private void ToggleFlyout()
@@ -384,6 +409,11 @@ internal sealed class MeterHost : ApplicationContext
         }));
         _menu.Items.Add(new ToolStripSeparator());
         _menu.Items.Add(new ToolStripMenuItem("Exit", null, (_, _) => Program.Exit()));
+
+        // WinForms opens an EMPTY menu with Cancel already set, and the menu is
+        // empty until its first opening builds it: without this, the first
+        // right-click after the meter starts opened nothing.
+        e.Cancel = false;
     }
 
     private ToolStripMenuItem Check(string label, bool on, Action<MeterSettings> change) =>
