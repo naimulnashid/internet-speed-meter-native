@@ -86,3 +86,23 @@ public class ViewTests
         Assert.Equal(31, SpeedTestRunner.Median([30, 32, 31]));
     }
 }
+
+public class AdapterTests
+{
+    private static readonly HashSet<string> Names = new(StringComparer.OrdinalIgnoreCase)
+    {
+        "Wi-Fi", "Ethernet 2", "Local Area Connection* 8", "Wi-Fi-QoS Packet Scheduler-0000",
+    };
+
+    [Theory]
+    [InlineData("Wi-Fi-QoS Packet Scheduler-0000", true)]
+    [InlineData("Wi-Fi-WFP Native MAC Layer LightWeight Filter-0000", true)]
+    [InlineData("Ethernet 2-WFP 802.3 MAC Layer LightWeight Filter-0001", true)]
+    [InlineData("Local Area Connection* 8-QoS Packet Scheduler-0000", true)]
+    [InlineData("Wi-Fi", false)]
+    [InlineData("Ethernet 2", false)]
+    // A real adapter whose name merely ends in digits is not a filter.
+    [InlineData("Office-LAN-2024", false)]
+    public void Filter_layers_of_another_adapter_are_not_adapters(string name, bool filter) =>
+        Assert.Equal(filter, Sampling.NetMonitor.IsFilterLayer(name, Names));
+}

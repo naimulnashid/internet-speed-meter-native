@@ -65,26 +65,55 @@ public sealed class NetMonitor
     /// <summary>Physical, connected interfaces worth metering.</summary>
     public static List<AdapterInfo> ListAdapters()
     {
-        var list = new List<AdapterInfo>();
         try
         {
-            foreach (var nic in NetworkInterface.GetAllNetworkInterfaces())
-                if (IsCandidate(nic)) list.Add(new AdapterInfo(nic.Id, nic.Name, nic.Description));
+            return Candidates(NetworkInterface.GetAllNetworkInterfaces()).Select(n => new AdapterInfo(n.Id, n.Name, n.Description)).ToList();
         }
         catch (NetworkInformationException)
         {
-            // A transient IP Helper failure: report whatever was collected.
+            // A transient IP Helper failure: nothing to offer this time.
+            return [];
         }
-        return list;
     }
 
-    private static bool IsCandidate(NetworkInterface nic)
+    /// <summary>
+    /// The interfaces worth metering: up, not loopback or a tunnel, not a WAN
+    /// Miniport, and not a filter layer of another interface.
+    /// </summary>
+    /// <remarks>
+    /// .NET (unlike the .NET Framework the C# meter ran on) lists every NDIS
+    /// filter bound to an adapter as an interface of its own -
+    /// "Wi-Fi-QoS Packet Scheduler-0000", "Wi-Fi-WFP Native MAC Layer
+    /// LightWeight Filter-0000" - each mirroring the adapter's own counters.
+    /// Left in, "auto" flipped between Wi-Fi and its filters and "all" counted
+    /// every byte several times over (found on the first day of 0.1.0).
+    /// </remarks>
+    private static List<NetworkInterface> Candidates(NetworkInterface[] all)
     {
-        if (nic.NetworkInterfaceType is NetworkInterfaceType.Loopback or NetworkInterfaceType.Tunnel) return false;
-        if (nic.OperationalStatus != OperationalStatus.Up) return false;
-        var description = nic.Description ?? "";
-        return description.IndexOf("Pseudo-Interface", StringComparison.OrdinalIgnoreCase) < 0
-            && description.IndexOf("Loopback", StringComparison.OrdinalIgnoreCase) < 0;
+        var names = all.Select(n => n.Name).ToHashSet(StringComparer.OrdinalIgnoreCase);
+        return all.Where(nic =>
+        {
+            if (nic.NetworkInterfaceType is NetworkInterfaceType.Loopback or NetworkInterfaceType.Tunnel) return false;
+            if (nic.OperationalStatus != OperationalStatus.Up) return false;
+            var description = nic.Description ?? "";
+            if (description.Contains("Pseudo-Interface", StringComparison.OrdinalIgnoreCase)
+                || description.Contains("Loopback", StringComparison.OrdinalIgnoreCase)
+                || description.StartsWith("WAN Miniport", StringComparison.OrdinalIgnoreCase)) return false;
+            return !IsFilterLayer(nic.Name, names);
+        }).ToList();
+    }
+
+    /// <summary>
+    /// "&lt;adapter&gt;-&lt;filter&gt;-0000", where &lt;adapter&gt; is another interface's
+    /// name: a filter driver's view of that adapter, not an adapter.
+    /// </summary>
+    internal static bool IsFilterLayer(string name, IReadOnlySet<string> names)
+    {
+        if (name.Length < 7 || name[^5] != '-' || !name[^4..].All(char.IsAsciiDigit)) return false;
+        var body = name[..^5];
+        for (var dash = body.IndexOf('-'); dash > 0; dash = body.IndexOf('-', dash + 1))
+            if (names.Contains(body[..dash])) return true;
+        return false;
     }
 
     /// <summary>
@@ -112,9 +141,8 @@ public sealed class NetMonitor
         string? bestId = null;
         var bestActivity = -1.0;
 
-        foreach (var nic in nics)
+        foreach (var nic in Candidates(nics))
         {
-            if (!IsCandidate(nic)) continue;
 
             long received, sent;
             try
