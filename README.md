@@ -122,8 +122,8 @@ minute files names each adapter byte; `speedtests.jsonl` holds one speed test
 per line. *Export history as CSV* (or `speedmeter export-csv`) turns any of it
 into a spreadsheet.
 
-**Coming from the earlier C# meter or its web dashboard?** This is their
-successor, and reads the same `settings.ini`, the same history and the same
+**Coming from the earlier [C# meter or its web dashboard](https://github.com/naimulnashid/internet-speed-meter)?**
+This is their successor, and reads the same `settings.ini`, the same history and the same
 `speedtests.jsonl`: everything they recorded carries on here. On first start
 it offers to stop the older meter, since two meters must not record at once,
 and the installer moves start-with-Windows over to this app.
