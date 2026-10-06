@@ -279,6 +279,10 @@ public static class Ui
         chip.Resources["ButtonBackgroundPressed"] = active ? Palette.AccentFillBrush : Palette.TransparentBrush;
         chip.Resources["ButtonBorderBrushPointerOver"] = active ? Palette.AccentFillBrush : Palette.TextFaintBrush;
         chip.Resources["ButtonBorderBrushPressed"] = active ? Palette.AccentFillBrush : Palette.TextFaintBrush;
+        // The label's colour is set here, so WinUI's disabled fill (a speed test
+        // locks the chips) would leave white text on pale grey. Keep the look.
+        chip.Resources["ButtonBackgroundDisabled"] = active ? Palette.AccentFillBrush : Palette.TransparentBrush;
+        chip.Resources["ButtonBorderBrushDisabled"] = active ? Palette.AccentFillBrush : Palette.BorderBrightBrush;
         chip.PointerEntered += (_, _) => { if (!active) label.Foreground = Palette.TextBrush; };
         chip.PointerExited += (_, _) => { if (!active) label.Foreground = Palette.TextMutedBrush; };
         chip.TranslationTransition = new Vector3Transition { Duration = TimeSpan.FromMilliseconds(180) };

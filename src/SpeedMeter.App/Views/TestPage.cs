@@ -74,7 +74,7 @@ public sealed class TestPage(PageContext ctx) : IPage
         var session = Session;
         session.LoadMeta();
         var page = new StackPanel();
-        page.Children.Add(Parts.PageHead("Speed test", "How fast the line can go, measured against speed.cloudflare.com - the one thing this app sends traffic for."));
+        page.Children.Add(Parts.PageHead("Speed test", null));
 
         page.Children.Add(Parts.Grid(360, SizeCard(session, data.Units), DialCard(session, data.Units)));
 
