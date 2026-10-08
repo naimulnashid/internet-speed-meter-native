@@ -74,26 +74,16 @@ public sealed class TestPage(PageContext ctx) : IPage
         var session = Session;
         session.LoadMeta();
         var page = new StackPanel();
-        page.Children.Add(Parts.PageHead("Speed test", null));
-
-        page.Children.Add(Parts.Grid(360, SizeCard(session, data.Units), DialCard(session, data.Units)));
-
-        foreach (var note in Notes(session)) page.Children.Add(note);
-
+        // The instrument and the two legs it measures side by side, the
+        // latency row under them: a whole result without scrolling.
         var shown = session.Phase == TestPhase.Done ? session.Result : null;
-        _downChart = new SpeedChart(false, data.Units);
-        _upChart = new SpeedChart(true, data.Units);
-        _downChart.Set([.. session.DownSeries], shown?.DownBps);
-        _upChart.Set([.. session.UpSeries], shown?.UpBps);
-        page.Children.Add(Parts.Grid(360,
-            Parts.FigureCard("Download", shown is null ? Parts.Figure("-", null, Palette.DownBrush) : Parts.RateValue(shown.DownBps, data.Units, Palette.DownBrush),
-                [shown is null ? null : $"peak second {Format.Rate(shown.PeakDownBps, data.Units)}",
-                 shown is null ? null : $"{Format.Bytes(shown.DownBytes)} over {shown.DownSeconds:0.0}s"], 0, Parts.Icon("", Palette.DownBrush), _downChart),
-            Parts.FigureCard("Upload", shown is null ? Parts.Figure("-", null, Palette.UpBrush) : Parts.RateValue(shown.UpBps, data.Units, Palette.UpBrush),
-                [shown is null ? null : $"peak second {(shown.PeakUpBps is { } pu ? Format.Rate(pu, data.Units) : "-")}",
-                 shown is null ? null : $"{Format.Bytes(shown.UpBytes)} over {shown.UpSeconds:0.0}s"], 60, Parts.Icon("", Palette.UpBrush), _upChart)));
+        var run = RunCard(session, data.Units);
+        run.Margin = new Thickness(0);
+        page.Children.Add(Parts.Grid(360, run, LegCards(session, shown, data.Units)));
 
         page.Children.Add(Parts.Grid(260, LatencyCards(shown)));
+
+        foreach (var note in Notes(session)) page.Children.Add(note);
 
         if (session.Meta is { } meta) page.Children.Add(ConnectionPanel(meta));
         if (data.Runs.Count > 0) page.Children.Add(RunsPanel(data));
@@ -106,10 +96,24 @@ public sealed class TestPage(PageContext ctx) : IPage
 
     /* ---------------------------------------------------------- Controls */
 
-    private Border SizeCard(SpeedTestSession session, UnitMode units)
+    /// <summary>What a run may spend, the dial, and the button that starts it: one card.</summary>
+    private Border RunCard(SpeedTestSession session, UnitMode units)
     {
+        var (title, sub) = session.Phase switch
+        {
+            TestPhase.Latency => ("Warming up", "Timing small requests and counting lost pings."),
+            TestPhase.Download => ("Downloading", "Pulling from speed.cloudflare.com."),
+            TestPhase.Upload => ("Uploading", "Pushing to speed.cloudflare.com."),
+            TestPhase.Saving => ("Saving", "Writing the result beside the history."),
+            TestPhase.Done => ("Done", "The result is saved below with the other runs."),
+            _ => ("Ready", " "),
+        };
+
         var busy = session.Busy;
         var body = new StackPanel();
+        var sizeLabel = Parts.StatLabel("Test size");
+        sizeLabel.Margin = new Thickness(0, 0, 0, 8);
+        body.Children.Add(sizeLabel);
         var sizes = new WrapPanel { HorizontalSpacing = 7, VerticalSpacing = 8, HorizontalAlignment = HorizontalAlignment.Left };
         foreach (var profile in Profile.All)
         {
@@ -134,35 +138,11 @@ public sealed class TestPage(PageContext ctx) : IPage
         connections.Children.Add(single);
         body.Children.Add(connections);
 
-        var why = Ui.Text(session.Parallel
-            ? "Several transfers at once, which is what a speed test usually means: how fast is the line."
-            : "One transfer, which is what a single download gets. Often well below the line, because one connection is limited by window size and round trip rather than by bandwidth.",
-            14, 400, Palette.TextFaintBrush, wrap: true);
-        why.Margin = new Thickness(0, 12, 0, 18);
-        body.Children.Add(why);
+        // Why the two differ, for whoever wonders; the page itself stays a single screen.
+        Ui.SetTip(parallel, "Several transfers at once: how fast the line is");
+        Ui.SetTip(single, "One transfer, as a single download gets: often well below the line, limited by window size and round trip");
 
-        var cost = Parts.Note($"This run will transfer up to {Format.Bytes(session.Profile.TotalBytes)}",
-            "to and from speed.cloudflare.com, and that traffic is real: it counts against a data cap, and the meter will record it as a spike in your history like any other transfer." +
-            (session.Parallel ? "" : " A single connection may not reach the budget before the time limit, in which case it spends less."));
-        cost.Margin = new Thickness(0);
-        body.Children.Add(cost);
-        return Ui.Panel("Test size", "Pick what a run may spend before starting it.", null, body, rise: false);
-    }
-
-    private Border DialCard(SpeedTestSession session, UnitMode units)
-    {
-        var (title, sub) = session.Phase switch
-        {
-            TestPhase.Latency => ("Warming up", "Timing small requests and counting lost pings."),
-            TestPhase.Download => ("Downloading", "Pulling from speed.cloudflare.com."),
-            TestPhase.Upload => ("Uploading", "Pushing to speed.cloudflare.com."),
-            TestPhase.Saving => ("Saving", "Writing the result beside the history."),
-            TestPhase.Done => ("Done", "The result is saved below with the other runs."),
-            _ => ("Ready", " "),
-        };
-
-        var body = new StackPanel();
-        _gauge = new Gauge(units);
+        _gauge = new Gauge(units) { Margin = new Thickness(0, 14, 0, 0) };
         body.Children.Add(_gauge);
 
         // Hidden rather than removed at rest: its space stays reserved, so
@@ -179,9 +159,10 @@ public sealed class TestPage(PageContext ctx) : IPage
         meter.Children.Add(_progressText);
         body.Children.Add(meter);
 
-        // The control sits beside the instrument it drives, and doubles as Stop.
-        var actions = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 14, Margin = new Thickness(0, 18, 0, 0) };
+        // The control sits under the instrument it drives, and doubles as Stop.
         var go = Ui.Button(session.Busy ? "Stop" : "Start test", primary: !session.Busy);
+        go.HorizontalAlignment = HorizontalAlignment.Center;
+        go.Margin = new Thickness(0, 18, 0, 0);
         go.IsEnabled = session.Phase != TestPhase.Saving;
         go.Click += (_, _) =>
         {
@@ -189,14 +170,61 @@ public sealed class TestPage(PageContext ctx) : IPage
             else session.Start();
         };
         Microsoft.UI.Xaml.Automation.AutomationProperties.SetName(go, session.Busy ? "Stop the speed test" : "Start a speed test");
-        actions.Children.Add(go);
-        if (session.Busy)
-        {
-            var ring = new ProgressRing { IsActive = true, Width = 18, Height = 18, Foreground = Palette.AccentBrightBrush, VerticalAlignment = VerticalAlignment.Center };
-            actions.Children.Add(ring);
-        }
-        body.Children.Add(actions);
+        body.Children.Add(go);
         return Ui.Panel(title, sub, null, body, rise: false);
+    }
+
+    /// <summary>Download over upload, each with the shape of its leg, beside the dial.</summary>
+    private Grid LegCards(SpeedTestSession session, SpeedTestResult? shown, UnitMode units)
+    {
+        _downChart = new SpeedChart(false, units, 168);
+        _upChart = new SpeedChart(true, units, 168);
+        _downChart.Set([.. session.DownSeries], shown?.DownBps);
+        _upChart.Set([.. session.UpSeries], shown?.UpBps);
+        UIElement[] cards =
+        [
+            Parts.FigureCard("Download", LegValue(shown is null ? Parts.Figure("-", null, Palette.DownBrush) : Parts.RateValue(shown.DownBps, units, Palette.DownBrush),
+                shown is null ? null : $"peak second {Format.Rate(shown.PeakDownBps, units)}",
+                shown is null ? null : $"{Format.Bytes(shown.DownBytes)} over {shown.DownSeconds:0.0}s"), [], 0, Parts.Icon("", Palette.DownBrush), _downChart),
+            Parts.FigureCard("Upload", LegValue(shown is null ? Parts.Figure("-", null, Palette.UpBrush) : Parts.RateValue(shown.UpBps, units, Palette.UpBrush),
+                shown is null ? null : $"peak second {(shown.PeakUpBps is { } pu ? Format.Rate(pu, units) : "-")}",
+                shown is null ? null : $"{Format.Bytes(shown.UpBytes)} over {shown.UpSeconds:0.0}s"), [], 60, Parts.Icon("", Palette.UpBrush), _upChart),
+        ];
+        // Two equal rows: stretched to the dial card's height, each takes half.
+        var stack = new Grid { RowSpacing = 18.4 };
+        for (var i = 0; i < cards.Length; i++)
+        {
+            stack.RowDefinitions.Add(new RowDefinition { Height = new GridLength(1, GridUnitType.Star) });
+            Grid.SetRow((FrameworkElement)cards[i], i);
+            stack.Children.Add(cards[i]);
+        }
+        return stack;
+    }
+
+    /// <summary>
+    /// A leg's figure with its detail lines across from it rather than under
+    /// it, so the chart below gets the height.
+    /// </summary>
+    private static Grid LegValue(UIElement figure, string? peak, string? moved)
+    {
+        var row = new Grid { ColumnSpacing = 16 };
+        row.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
+        row.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
+        row.Children.Add(figure);
+        // A blank line keeps its place, so the row does not shift when the figures land.
+        var lines = new StackPanel { VerticalAlignment = VerticalAlignment.Bottom, Margin = new Thickness(0, 0, 0, 4) };
+        var first = Ui.Text(peak ?? " ", 15, 400, Palette.TextMutedBrush, numeric: true);
+        var second = Ui.Text(moved ?? " ", 14, 400, Palette.TextFaintBrush, numeric: true);
+        second.Margin = new Thickness(0, 3, 0, 0);
+        foreach (var line in new[] { first, second })
+        {
+            line.HorizontalAlignment = HorizontalAlignment.Right;
+            line.TextAlignment = TextAlignment.Right;
+            lines.Children.Add(line);
+        }
+        Grid.SetColumn(lines, 1);
+        row.Children.Add(lines);
+        return row;
     }
 
     /// <summary>The dial, the progress bar and the live charts: in place, never a rebuild.</summary>

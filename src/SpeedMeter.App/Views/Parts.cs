@@ -12,32 +12,6 @@ namespace SpeedMeter.App.Views;
 /// <summary>Pieces more than one page draws.</summary>
 public static class Parts
 {
-    /// <summary>The page's h1 and the line under it.</summary>
-    public static StackPanel PageHead(string title, string? sub, UIElement? aside = null)
-    {
-        var head = new StackPanel { Margin = new Thickness(0, 0, 0, 30) };
-        var row = new Microsoft.UI.Xaml.Controls.Grid { ColumnSpacing = 16 };
-        row.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
-        row.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
-        var h1 = Ui.Text(title, 35, 600, spacing: -0.02);
-        Microsoft.UI.Xaml.Automation.AutomationProperties.SetHeadingLevel(h1, Microsoft.UI.Xaml.Automation.Peers.AutomationHeadingLevel.Level1);
-        row.Children.Add(h1);
-        if (aside is FrameworkElement a)
-        {
-            a.VerticalAlignment = VerticalAlignment.Center;
-            Microsoft.UI.Xaml.Controls.Grid.SetColumn(a, 1);
-            row.Children.Add(a);
-        }
-        head.Children.Add(row);
-        if (sub is not null)
-        {
-            var line = Ui.Text(sub, 15, 400, Palette.TextMutedBrush, wrap: true);
-            line.Margin = new Thickness(0, 6, 0, 0);
-            head.Children.Add(line);
-        }
-        return head;
-    }
-
     /// <summary>The small uppercase label over a figure.</summary>
     public static TextBlock StatLabel(string text)
     {

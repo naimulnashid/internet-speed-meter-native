@@ -76,7 +76,6 @@ public sealed class SpeedPage(PageContext ctx) : IPage
             return page;
         }
 
-        page.Children.Add(Parts.PageHead("Speed", null));
         if (data.Problem is { } problem) page.Children.Add(Parts.Alert("Speed history is not being recorded", problem, "Details are in `error.log` beside settings.ini. Nothing is lost from before it stopped."));
 
         static string When(Peak peak) => peak.AtUtc is { } at ? Format.Stamp(at) : "never observed";
