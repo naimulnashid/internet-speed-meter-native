@@ -712,7 +712,14 @@ public sealed partial class MainWindow : Window
         try
         {
             await Render(Root, path);
+            // A render covers only what it can see drawn, and the light theme's
+            // lifted cards do not count: with nothing else at the top, the page
+            // came back as its footer. Painted for the capture, the frame is all
+            // of it - not otherwise, as the shadows fall on a surface behind it.
+            _frame.Background = Palette.BgBrush;
+            await Task.Delay(100);
             await Render(_frame, Path.ChangeExtension(path, ".page.png"));
+            _frame.Background = null;
         }
         catch (Exception ex)
         {
