@@ -15,8 +15,10 @@ const ROOT = join(SITE, '..');
 const OUT = join(SITE, 'dist');
 const SHOTS = join(ROOT, 'docs', 'screenshots');
 const ICON = join(ROOT, 'src', 'SpeedMeter.App', 'Assets', 'app-icon.svg');
+// The repository's social card doubles as the page's link preview (og:image).
+const CARD = join(ROOT, 'docs', 'social-preview.png');
 
-for (const need of [SHOTS, ICON]) {
+for (const need of [SHOTS, ICON, CARD]) {
   if (!existsSync(need)) {
     console.error(`Missing ${need}; the site would render with broken images.`);
     process.exit(1);
@@ -27,5 +29,6 @@ rmSync(OUT, { recursive: true, force: true });
 mkdirSync(OUT, { recursive: true });
 for (const f of ['index.html', 'styles.css', 'site.js']) cpSync(join(SITE, f), join(OUT, f));
 cpSync(ICON, join(OUT, 'favicon.svg'));
+cpSync(CARD, join(OUT, 'social-preview.png'));
 cpSync(SHOTS, join(OUT, 'screenshots'), { recursive: true });
 console.log(`site built into ${OUT}`);

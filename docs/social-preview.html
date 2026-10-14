@@ -67,6 +67,10 @@
     background: rgba(10, 10, 11, 0.7);
   }
   .dot { width: 9px; height: 9px; border-radius: 50%; background: var(--down); }
+  .chip .dot { display: inline-block; vertical-align: 1px; margin-right: 2px; }
+  /* The project site's address, so the card says where to see more. */
+  .site { color: var(--text); border-color: rgba(110, 231, 168, 0.45); }
+  .site svg { width: 18px; height: 18px; fill: none; stroke: var(--down); stroke-width: 1.6; }
 
   h1 { font-size: 72px; line-height: 1; white-space: nowrap; font-weight: 700; letter-spacing: -0.045em; }
   h1 .accent { color: var(--down-bright); }
@@ -77,10 +81,10 @@
   }
   .tagline strong { color: var(--text); font-weight: 500; }
 
-  .chips { display: flex; flex-wrap: wrap; gap: 10px; }
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; }
   .chip {
-    font-family: 'Geist Mono', monospace; font-size: 16px; color: var(--text-dim);
-    padding: 6px 12px; border-radius: 8px; background: #111114; border: 1px solid var(--border);
+    font-family: 'Geist Mono', monospace; font-size: 15px; color: var(--text-dim);
+    padding: 6px 11px; border-radius: 8px; background: #111114; border: 1px solid var(--border);
   }
 
   /* ---- right: an illustrative window above an illustrative taskbar ---- */
@@ -144,17 +148,17 @@
 <div class="frame">
   <section class="copy">
     <div class="pills">
-      <span class="pill"><span class="dot"></span>Windows 10 / 11</span>
-      <span class="pill">Native app</span>
+      <span class="pill site"><svg viewBox="0 0 18 18"><circle cx="9" cy="9" r="8"/><path d="M1 9h16"/><ellipse cx="9" cy="9" rx="3.6" ry="8"/></svg>internet-speed-meter-native-site.vercel.app</span>
     </div>
     <div>
       <h1>Internet Speed<br><span class="accent">Meter</span></h1>
       <p class="tagline">
-        Live download and upload on the taskbar, in the clock's own size.
+        A native Windows app: download and upload on the taskbar, in the clock's own size.
         <strong>Every second recorded, and a speed test to check the line.</strong>
       </p>
     </div>
     <div class="chips">
+      <span class="chip"><span class="dot"></span> Windows 10 / 11</span>
       <span class="chip">WinUI 3</span>
       <span class="chip">.NET 10</span>
       <span class="chip">Local only</span>

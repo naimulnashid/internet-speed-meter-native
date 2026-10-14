@@ -19,8 +19,10 @@ the app's screenshots use.
 
 The app screenshots come from `docs/screenshots/`, which `tools\Snapshot.ps1`
 regenerates; the page shows the Speed and Test captures matching its own
-theme. The build copies them in, and the app icon as the favicon, rather than
-keeping second copies here.
+theme. The build copies them in, the app icon as the favicon, and
+`docs/social-preview.png` (the repository's social card) as the link
+preview image, rather than keeping second copies here. The preview tags use
+absolute URLs to the deployed address, since link unfurlers need them.
 
 **Phones get the desktop layout, zoomed to fit**: the viewport tag is
 `width=1024` with no initial scale, so a phone lays the page out 1024px wide
@@ -44,11 +46,11 @@ python -m http.server 7954 --bind 127.0.0.1 --directory site/dist
 Import the public repository and set **Root Directory** to `site`. Everything else
 comes from `site/vercel.json`: no framework, no install step, the build
 command and output folder, and the security headers. Vercel's build can read
-files outside the root directory, which is how the screenshots and the icon
-get in.
+files outside the root directory, which is how the screenshots, the icon
+and the social card get in.
 
 **A push builds only when the site could have changed**: something under
-`site/`, `docs/screenshots/` or the app icon differs from the last successful
+`site/`, `docs/screenshots/`, the app icon or the social card differs from the last successful
 deployment (`ignoreCommand`; exit 0 skips, anything else builds). With no
 previous deployment, or one whose commit is not in Vercel's clone, the command
 fails and the build runs, so it errs towards building. Any other file the site

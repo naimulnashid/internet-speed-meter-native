@@ -4,7 +4,7 @@
   "installCommand": "",
   "buildCommand": "node build.mjs",
   "outputDirectory": "dist",
-  "ignoreCommand": "[ -n \"$VERCEL_GIT_PREVIOUS_SHA\" ] && git diff --quiet \"$VERCEL_GIT_PREVIOUS_SHA\" HEAD -- . ../docs/screenshots ../src/SpeedMeter.App/Assets/app-icon.svg",
+  "ignoreCommand": "[ -n \"$VERCEL_GIT_PREVIOUS_SHA\" ] && git diff --quiet \"$VERCEL_GIT_PREVIOUS_SHA\" HEAD -- . ../docs/screenshots ../src/SpeedMeter.App/Assets/app-icon.svg ../docs/social-preview.png",
   "cleanUrls": true,
   "headers": [
     {

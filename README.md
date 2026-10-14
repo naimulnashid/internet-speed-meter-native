@@ -3,6 +3,7 @@
 [![CI](https://github.com/naimulnashid/internet-speed-meter-native/actions/workflows/ci.yml/badge.svg)](https://github.com/naimulnashid/internet-speed-meter-native/actions/workflows/ci.yml)
 [![Latest release](https://img.shields.io/github/v/release/naimulnashid/internet-speed-meter-native)](https://github.com/naimulnashid/internet-speed-meter-native/releases/latest)
 [![MIT license](https://img.shields.io/github/license/naimulnashid/internet-speed-meter-native)](LICENSE)
+[![Project site](https://img.shields.io/website?url=https%3A%2F%2Finternet-speed-meter-native-site.vercel.app&label=project%20site&up_message=online&down_message=offline)](https://internet-speed-meter-native-site.vercel.app/)
 
 Live download and upload speed on the Windows taskbar, in the clock's own
 size, with a permanent history of what the connection has done and a speed
