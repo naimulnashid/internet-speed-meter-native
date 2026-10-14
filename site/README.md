@@ -1,5 +1,7 @@
 # Project site
 
+Live at https://internet-speed-meter-native-site.vercel.app/
+
 A one-page site that shows what this app is and does, for people who find
 the repository: how the meter and the dashboard split the work, the history
 on disk, a tour of both pages and the details panel, every chart and readout
@@ -39,7 +41,7 @@ python -m http.server 7954 --bind 127.0.0.1 --directory site/dist
 
 ## Deploying on Vercel
 
-Import the repository and set **Root Directory** to `site`. Everything else
+Import the public repository and set **Root Directory** to `site`. Everything else
 comes from `site/vercel.json`: no framework, no install step, the build
 command and output folder, and the security headers. Vercel's build can read
 files outside the root directory, which is how the screenshots and the icon
