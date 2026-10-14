@@ -81,13 +81,12 @@
     </div>
     <div class="tb tb-dark" id="hero-taskbar"></div>
   </div>
-  <p class="hero-note">An illustration: the readout on the taskbar and the panel a click on it opens, ticking once a second like the meter, beside the dashboard window. The numbers are invented.</p>
 </section>
 
 <!-- ============================================================ how -->
 <section id="how" class="section wrap">
   <h2>How it works</h2>
-  <p class="section-lede">One program, run as two processes. The part that runs all day is small and never loads the window's UI framework; the dashboard is started when its window opens and ends when it closes.</p>
+  <p class="section-lede">One program, run as two processes. The part that runs all day is small and never loads the window's UI framework.</p>
 
   <div class="flow">
     <div class="lane lane-down">
@@ -153,7 +152,7 @@
   <div class="charts-head">
     <div>
       <h2>Every chart and readout, live</h2>
-      <p class="section-lede">Drawn here from a fixed random seed, so every number is invented and none of it is anyone's connection. In the app the dashboard's charts are drawn on WinUI shapes and the meter's in GDI, without a chart library.</p>
+      <p class="section-lede">Drawn here from a fixed random seed, so every number is invented. In the app the dashboard's charts are drawn on WinUI shapes and the meter's in GDI, without a chart library.</p>
     </div>
     <div class="seg" id="units" role="radiogroup" aria-label="Units">
       <button role="radio" aria-checked="true" data-units="bits">Bits · Mbps</button>
@@ -175,7 +174,7 @@
           <button role="radio" aria-checked="false" data-v="right">Beside the clock</button>
         </div>
       </header>
-      <p>Two lines in the clock's font and size, coloured by the <b>taskbar's</b> theme rather than the app's, so they always read on it. The window is owned by the taskbar, follows it frame by frame when it auto-hides, stays above it when Start opens, and never takes focus from what you are typing. Click it for details, double-click for the dashboard, right-click for the menu.</p>
+      <p>Two lines in the clock's font and size, coloured by the <b>taskbar's</b> theme rather than the app's, so they always read on it. The window is owned by the taskbar, follows it frame by frame when it auto-hides, stays above it when Start opens, and never takes focus from what you are typing. While the bar is auto-hidden it lets clicks through, so the sliver that brings the bar back still works. Its colour can also be forced light or dark. Click it for details, double-click for the dashboard, right-click for the menu.</p>
       <div class="tb-stage"><div class="tb" id="v-taskbar"></div></div>
     </article>
 
@@ -187,7 +186,7 @@
           <button role="radio" aria-checked="false" data-v="up">Upload only</button>
         </div>
       </header>
-      <p>Where the taskbar has no room (vertical, or crowded) the numbers move into the tray icon. At 16 px a vector font leaves about five pixels of ink, so the digits are a <b>hand-placed pixel font</b>, three pixels wide, which keeps "9.4M" and "118M" readable. One metric alone is stretched to twice the height. Larger icons use real type.</p>
+      <p>Where the taskbar has no room (vertical, or crowded) the numbers move into the tray icon. At 16 px a vector font leaves about five pixels of ink, so the digits are a <b>hand-placed pixel font</b>, three pixels wide, which keeps "9.4M" and "118M" readable. One metric alone is stretched to twice the height. Larger icons use real type. Hovering it also says when recording has stopped.</p>
       <div class="icon-row">
         <canvas id="v-icon-big" width="16" height="16" aria-label="The tray icon, magnified"></canvas>
         <div class="icon-side">
@@ -202,7 +201,7 @@
 
     <article class="viz">
       <header><h3>The menu</h3><span class="where">Right-click the readout or the icon</span></header>
-      <p>Rebuilt each time it opens, so a hot-plugged adapter shows up. Open a submenu to see its choices.</p>
+      <p>Rebuilt each time it opens, so a hot-plugged adapter shows up. <b>Automatic</b> meters the busiest adapter and <b>All adapters</b> sums them; the units apply everywhere at once, taskbar to dashboard. The first right-click opens it, and a click anywhere else, the taskbar included, closes it.</p>
       <div class="menus">
         <div class="menu menu-static menu-win" id="v-traymenu"></div>
       </div>
@@ -210,7 +209,7 @@
 
     <article class="viz wide">
       <header><h3>Details panel</h3><span class="where">A click on the readout</span></header>
-      <p>The adapter being metered and how long the session has run, both rates, the last 60 seconds as a graph (download filled, upload as a line), the session's totals and its fastest second, and the two ways into the dashboard. A status line appears only when recording has stopped.</p>
+      <p>A status line appears only when recording has stopped. Painted by hand, so it stays crisp at any display scaling, and coloured by the taskbar's theme like the readout.</p>
       <div class="flyouts">
         <div class="flyout fl-dark" id="v-flyout-dark"></div>
         <div class="flyout fl-light" id="v-flyout-light"></div>
@@ -225,15 +224,15 @@
   <div class="gallery">
 
     <article class="viz wide">
-      <header><h3>Fastest seconds and best sustained averages</h3><span class="where">Speed</span>
+      <header><h3>Fastest seconds and best sustained averages</h3>
         <button type="button" class="mini-btn" id="cards-reload">Replay loading</button>
       </header>
-      <p>The fastest single second today and ever, each way, with the minute it happened. Then the best unbroken <b>10 s, 1 min and 5 min</b> download averages from the raw seconds, and how much history the page stands on. The records cover all of history; only the chart below follows its range. <b>Replay loading</b> shows the skeleton the page draws first, which is the page's own layout turned into shapes.</p>
+      <p>The best unbroken averages come from the raw one-second samples. The records cover all of history; only the chart below follows its range. <b>Replay loading</b> shows the skeleton the page draws first, which is the page's own layout turned into shapes.</p>
       <div class="figs" id="v-figs"></div>
     </article>
 
     <article class="viz wide">
-      <header><h3>Daily peak</h3><span class="where">Speed</span>
+      <header><h3>Daily peak</h3>
         <div class="seg seg-sm" id="peak-range" role="radiogroup" aria-label="Days shown">
           <button role="radio" aria-checked="false" data-range="7">7 days</button>
           <button role="radio" aria-checked="true" data-range="30">30 days</button>
@@ -252,8 +251,8 @@
   <div class="gallery">
 
     <article class="viz wide">
-      <header><h3>A speed test, end to end</h3><span class="where">Test</span></header>
-      <p>Simulated here: <b>nothing is downloaded</b>, and the run takes a few seconds instead of a real one's twenty or so. In the app the same card picks the size and the connections, the dial and the progress bar update ten times a second, and each leg's chart fills as it runs. The finished run joins the table below.</p>
+      <header><h3>A speed test, end to end</h3></header>
+      <p>Simulated here: <b>nothing is downloaded</b>, and the run takes a few seconds instead of a real one's twenty or so. In the app the dial and the progress bar update ten times a second, and each leg's chart fills as it runs. The finished run joins the table below.</p>
       <div class="testgrid">
         <div class="tcard" id="t-run">
           <div class="t-title" id="t-title">Ready</div>
@@ -276,7 +275,7 @@
     </article>
 
     <article class="viz wide">
-      <header><h3>Download and upload, as they ran</h3><span class="where">Test</span></header>
+      <header><h3>Download and upload, as they ran</h3></header>
       <p>A headline is one number, and one number hides the shape: a slow ramp, a plateau that sagged, a link that stalled and recovered. Each leg is drawn on a curve that never overshoots, with the average dashed across it. Hover for the rate at any moment. The first second is left out of the average and the peak, because for an upload it mostly measures send buffers filling.</p>
       <div class="legs2">
         <div><div class="stat-label">Download</div><div class="chart" id="v-leg-down"></div></div>
@@ -285,7 +284,7 @@
     </article>
 
     <article class="viz">
-      <header><h3>The dial</h3><span class="where">Test</span>
+      <header><h3>The dial</h3>
         <input type="range" id="dial-range" min="0" max="1000" value="620" aria-label="Rate shown on the dial">
       </header>
       <p>The scale is <b>logarithmic</b>, and that is the whole design decision: a home connection can be anything from a few hundred Kbps to a gigabit, and on a linear dial sized for the fast case every ordinary speed sits pinned at the stop. Four decades of arc give 10 and 100 Mbps visibly different positions; the minor ticks at 2x and 5x keep it legible. Drag the slider; the needle eases in log space, as the app's does.</p>
@@ -293,14 +292,14 @@
     </article>
 
     <article class="viz">
-      <header><h3>Connection</h3><span class="where">Test</span></header>
-      <p>Both ends of what is being measured, from <code>speed.cloudflare.com/meta</code>: your network, the public address, and the datacentre Cloudflare routed you to. The values below are documentation placeholders; the app's own screenshots use the same ones and never a real address.</p>
+      <header><h3>Connection</h3></header>
+      <p>Both ends of what is being measured, from <code>speed.cloudflare.com/meta</code>. The values below are documentation placeholders, not a real network.</p>
       <div class="conn" id="v-conn"></div>
     </article>
 
     <article class="viz wide">
-      <header><h3>Previous runs</h3><span class="where">Test</span><span class="aside" id="v-runs-count"></span></header>
-      <p>Every run, beside what the meter <b>independently</b> recorded at the adapter while it ran: two measurements that should agree. Latency reads idle / during download / during upload. "Meter saw" waits until every minute the run touched has been written; runs taken on a phone in the earlier web dashboard keep a dash there. Hover the loss and the dashes. The pager is the app's: Newest, Newer, the pages around this one, Older, Oldest, and Go to page.</p>
+      <header><h3>Previous runs</h3><span class="aside" id="v-runs-count"></span></header>
+      <p>Every run, beside what the meter <b>independently</b> recorded at the adapter while it ran: two measurements that should agree. "Meter saw" waits until every minute the run touched has been written; runs taken on a phone in the earlier web dashboard keep a dash there.</p>
       <div id="v-runs"></div>
     </article>
 
@@ -311,7 +310,7 @@
 
     <article class="viz">
       <header><h3>Top bar and settings</h3><span class="where">Dashboard</span></header>
-      <p>The adapter and the live rates sit in the top bar, read from the meter once a second. The ⚙ menu holds everything else.</p>
+      <p>The live rates in the top bar are read from the meter once a second.</p>
       <div class="dash-top" id="v-dashtop"></div>
       <div class="menus"><div class="menu menu-static menu-win" id="v-gearmenu"></div></div>
     </article>
@@ -330,41 +329,6 @@
   <h2>Everything it does</h2>
 
   <div class="feat-grid">
-
-    <div class="feat card">
-      <h3>On the taskbar</h3>
-      <ul>
-        <li>Download and upload as two stacked lines, <b>↓</b> green and <b>↑</b> amber, in the clock's font and size.</li>
-        <li>At the left end of the taskbar or beside the clock.</li>
-        <li>Rides an auto-hiding taskbar frame by frame, paced by the compositor, and lets clicks through while the bar is hidden so the sliver that brings it back still works.</li>
-        <li>Stays above the taskbar when Start opens, and never takes keyboard focus.</li>
-        <li>Text colour matches the taskbar, or is forced light or dark.</li>
-        <li>Where the taskbar is vertical or has no room, the numbers move into the tray icon on their own.</li>
-      </ul>
-    </div>
-
-    <div class="feat card">
-      <h3>Tray icon and menu</h3>
-      <ul>
-        <li>Numbers in the icon, in a hand-drawn pixel font at 16 px: both directions, download only or upload only, with or without unit letters, upload on top if you like.</li>
-        <li>Hovering shows both rates and the adapter, and says when recording has stopped.</li>
-        <li>Units in bytes (KB/s, MB/s) or bits (Kbps, Mbps), everywhere at once.</li>
-        <li>Adapter: <b>Automatic</b> (the busiest), <b>All adapters</b> (summed), or any one.</li>
-        <li>Start with Windows, Reset session counters, Run a speed test, Exit.</li>
-        <li>Right-click opens the menu on the first press, and a click anywhere else, the taskbar included, closes it.</li>
-      </ul>
-    </div>
-
-    <div class="feat card">
-      <h3>Details panel</h3>
-      <ul>
-        <li>The adapter, the session's length, both live rates and a 60-second graph.</li>
-        <li>The session's totals each way and its fastest second.</li>
-        <li><b>Open dashboard</b> and <b>Run a speed test</b>, one click each.</li>
-        <li>Painted by hand, so it stays crisp at any display scaling and needs nothing of the dashboard's framework.</li>
-        <li>Follows the taskbar's theme, like the readout.</li>
-      </ul>
-    </div>
 
     <div class="feat card">
       <h3>A permanent record</h3>
