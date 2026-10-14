@@ -39,7 +39,7 @@
     </a>
     <nav class="top-links" aria-label="Sections">
       <a href="#how">How it works</a>
-      <a href="#tour">Tour</a>
+      <!-- Tour hidden, pending review: <a href="#tour">Tour</a> -->
       <a href="#charts">Charts</a>
       <a href="#features">Features</a>
     </nav>
@@ -71,7 +71,7 @@
   </p>
   <div class="hero-cta">
     <a class="btn btn-solid" href="https://github.com/naimulnashid/internet-speed-meter-native/releases/latest">Download the latest release</a>
-    <a class="btn" href="#tour">See the app</a>
+    <a class="btn" href="#charts">See the app</a><!-- was #tour; the tour is hidden, pending review -->
   </div>
 
   <div class="hero-bar" aria-hidden="true">
@@ -128,7 +128,11 @@
 </section>
 
 <!-- ============================================================ tour -->
-<section id="tour" class="section wrap">
+<!-- HIDDEN 2026-10-15 at the owner's request, pending review; nothing below is
+     deleted. To restore: remove `hidden` from this section, uncomment the
+     Tour link in the top bar, and point the hero's second button back at
+     #tour. -->
+<section id="tour" class="section wrap" hidden>
   <h2>A tour of the app</h2>
   <p class="section-lede">Scroll inside the frame. Every number in these is invented: they are rendered from the history <code>speedmeter demo-data</code> writes.</p>
 
@@ -139,7 +143,7 @@
   </div>
   <figure class="shot card" id="shot">
     <div class="shot-scroll" tabindex="0" aria-label="Screenshot, scrollable">
-      <img id="shot-img" src="screenshots/speed.webp" alt="" loading="eager">
+      <img id="shot-img" src="screenshots/speed.webp" alt="" loading="lazy">
     </div>
   </figure>
 </section>

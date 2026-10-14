@@ -4,8 +4,11 @@ Live at https://internet-speed-meter-native-site.vercel.app/
 
 A one-page site that shows what this app is and does, for people who find
 the repository: how the meter and the dashboard split the work, the history
-on disk, a tour of both pages and the details panel, every chart and readout
-the app draws, and every feature.
+on disk, every chart and readout the app draws, and every feature.
+
+**The screenshot tour is hidden** (2026-10-15, pending the owner's review):
+its section, nav link and script are all kept, and the comment above
+`<section id="tour">` in `index.html` says how to bring it back.
 
 Plain HTML, CSS and one script, with no framework and no dependencies. Every
 number is generated in the browser from a fixed random seed, so it is the same
@@ -18,8 +21,8 @@ card shows documentation values only (203.0.113.0/24, AS64500), the same ones
 the app's screenshots use.
 
 The app screenshots come from `docs/screenshots/`, which `tools\Snapshot.ps1`
-regenerates; the page shows the Speed and Test captures matching its own
-theme. The build copies them in, the app icon as the favicon, and
+regenerates; the hero (and the hidden tour) show the Speed and Test captures
+matching the page's theme. The build copies them in, the app icon as the favicon, and
 `docs/social-preview.png` (the repository's social card) as the link
 preview image, rather than keeping second copies here. The preview tags use
 absolute URLs to the deployed address, since link unfurlers need them.
