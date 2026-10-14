@@ -164,7 +164,8 @@ dotnet test --project tests\SpeedMeter.Core.Tests\SpeedMeter.Core.Tests.csproj
 statistics, the speed test. `src\SpeedMeter.App` is the app: the meter
 (WinForms, in `Meter\`) and the dashboard (WinUI 3). The screenshots here are
 of invented data (`speedmeter demo-data demo-data`), rendered by
-`tools\Snapshot.ps1`.
+`tools\Snapshot.ps1`. `node site/build.mjs` builds the project site, a page
+with every chart drawn live (see [site/README.md](site/README.md)).
 
 ## License
 

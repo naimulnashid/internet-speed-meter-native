@@ -20,3 +20,6 @@ demo-data/
 # Screenshots taken while developing can show real figures. Anchored: the
 # README's own, made from invented data, live in docs/screenshots/.
 /screenshots/
+
+# The project site build (site/build.mjs)
+site/dist/
